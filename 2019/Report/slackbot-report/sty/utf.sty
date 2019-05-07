@@ -1,0 +1,183 @@
+\NeedsTeXFormat{pLaTeX2e}
+\ProvidesPackage{utf}[2010/03/22 v1.9.6 psitau]
+%for processing options 
+\newif\if@kana \@kanafalse
+\newif\if@macro \@macrotrue
+\newif\if@utf@uplatex \@utf@uplatexfalse
+\DeclareOption{cid}{\relax}
+\DeclareOption{expert}{\@kanatrue}
+\DeclareOption{nomacro}{\@macrofalse}
+\DeclareOption{nomacros}{\@macrofalse}
+\DeclareOption{uplatex}{\@utf@uplatextrue}
+\def\utf@JYn{\if@utf@uplatex JY2\else JY1\fi}
+\def\utf@JTn{\if@utf@uplatex JT2\else JT1\fi}
+\ProcessOptions\relax
+%user interface
+%force catcode of \" be 12
+\count@\catcode`\"
+\DeclareRobustCommand{\UTF}[1]{\begingroup%
+	\edef\reserved@a{\gtdefault}\ifx\k@family\reserved@a \kanjiseries{bx}\fi%
+	\kanjifamily{utfj}\uppercase{\set@character="#1}%
+	\endgroup%
+}
+\DeclareRobustCommand{\CID}[1]{\begingroup%
+	\edef\reserved@a{\gtdefault}\ifx\k@family\reserved@a \kanjiseries{bx}\fi%
+	\kanjifamily{cid}\set@character=#1%
+	\endgroup%
+}
+\gdef\Redefine@UTF{\@ifpackageloaded{hyperref}{%
+	\def\hyper@UTF##1{\ifHy@pdfstring\0x##1\else\csname UTF \endcsname{##1}\fi}
+	\def\UTF{\protect\hyper@UTF}}{}
+}
+\AtBeginDocument{\Redefine@UTF}
+%internal macros
+%macros by iNOUE Koich!
+\newcommand\set@character{\afterassignment\put@character\@tempcnta}
+\newcommand\put@character{%
+	\@tempcntb=\@tempcnta
+	\divide\@tempcntb by "1000
+	\kanjishape{\ifcase\@tempcntb0\or1\or2\or3\or4\or5\or6\or7\or8\or9\or a\or b\or c\or d\or e\or f\fi}%
+	\selectfont%
+	\multiply\@tempcntb by "1000
+	\advance\@tempcnta by -\@tempcntb
+	\@tempcntb=\@tempcnta
+	\divide\@tempcntb by "40
+	\multiply\@tempcntb by "C0
+	\advance\@tempcnta by \@tempcntb
+	\if@utf@uplatex
+	  \advance\@tempcnta by "113030
+	  \char\@tempcnta%
+	\else
+	  \advance\@tempcnta by "3030
+	  \char\jis\@tempcnta%
+	\fi
+}
+\catcode`\"=\count@
+%end of changing catcode of \"
+\def\@UnDeclareFontShape#1#2#3#4{\def\reserved@a{#1/#2/#3/#4}%
+	\@undeclare@fontshape
+	{5}{6}{7}{8}{9}{10}{10.95}{12}{14.4}{17.28}{20.74}{24.88}\@nil}
+\def\@undeclare@fontshape#1{\ifx\@nil#1\else
+	\expandafter\let\csname\reserved@a/#1\endcsname\@undefined
+	\expandafter\@undeclare@fontshape\fi}
+\def\Declare@FontShape#1#2#3#4{%
+	\Declare@FontShapeEnc{\utf@JYn}{#1}{#2}{#4}{h}#3\@nil
+	\Declare@FontShapeEnc{\utf@JTn}{#1}{#2}{#4}{v}#3\@nil}
+\def\Declare@FontShapeEnc#1#2#3#4#5#6{\ifx\@nil#6\else
+	\DeclareFontShape{#1}{#2}{#3}{#6}{<->s*[\utf@sc@le]#4#6-#5}{}%
+	\Declare@FontShape@Enc{#1}{#2}{#3}{#4}{#5}\fi}
+\def\Declare@FontShape@Enc#1\fi{\fi\Declare@FontShapeEnc#1}
+%for jsclasses
+\newif\if@jsclasses \@jsclassesfalse
+\@ifclassloaded{jsarticle}{\@jsclassestrue}{}
+\@ifclassloaded{jsbook}{\@jsclassestrue}{}
+\if@jsclasses\def\utf@sc@le{0.961}\else\def\utf@sc@le{1}\fi
+%definitions of font
+\DeclareKanjiFamily{\utf@JYn}{utfj}{}
+\DeclareKanjiFamily{\utf@JTn}{utfj}{}
+\Declare@FontShape{utfj}{m}{0123456789abcdef}{utfjm}
+\Declare@FontShape{utfj}{bx}{0123456789abcdef}{utfjg}
+\DeclareKanjiFamily{\utf@JYn}{cid}{}
+\DeclareKanjiFamily{\utf@JTn}{cid}{}
+\Declare@FontShape{cid}{m}{012345}{cidm}
+\Declare@FontShape{cid}{bx}{012345}{cidg}
+\if@kana
+	\@UnDeclareFontShape{\utf@JYn}{mc}{m}{n}
+	\@UnDeclareFontShape{\utf@JTn}{mc}{m}{n}
+	\@UnDeclareFontShape{\utf@JYn}{gt}{m}{n}
+	\@UnDeclareFontShape{\utf@JTn}{gt}{m}{n}
+	\DeclareFontShape{\utf@JYn}{mc}{m}{n}{<-> s * [\utf@sc@le] expmin-h}{}
+	\DeclareFontShape{\utf@JTn}{mc}{m}{n}{<-> s * [\utf@sc@le] expmin-v}{}
+	\DeclareFontShape{\utf@JYn}{gt}{m}{n}{<-> s * [\utf@sc@le] expgoth-h}{}
+	\DeclareFontShape{\utf@JTn}{gt}{m}{n}{<-> s * [\utf@sc@le] expgoth-v}{}
+	\DeclareKanjiFamily{\utf@JYn}{ruby}{}
+	\DeclareKanjiFamily{\utf@JTn}{ruby}{}
+	\DeclareFontShape{\utf@JYn}{ruby}{m}{n}{<-> s * [\utf@sc@le] rubymin-h}{}
+	\DeclareFontShape{\utf@JTn}{ruby}{m}{n}{<-> s * [\utf@sc@le] rubymin-v}{}
+	\DeclareFontShape{\utf@JYn}{ruby}{bx}{n}{<-> s * [\utf@sc@le] rubygoth-h}{}
+	\DeclareFontShape{\utf@JTn}{ruby}{bx}{n}{<-> s * [\utf@sc@le] rubygoth-v}{}
+	\newcommand{\rubydefault}{ruby}
+	\DeclareRobustCommand\rubyfamily{\edef\reserved@a{\gtdefault}%
+		\ifx\k@family\reserved@a \kanjiseries{bx}\fi%
+		\kanjifamily\rubydefault\selectfont}
+	\AtBeginDocument{\ifx\rubykatuji\@undefined\else\def\rubykatuji{\rubyfamily\tiny}\fi}
+\fi
+\if@macro
+	%input utfajmacros.sty
+	\IfFileExists{ajmacros.sty}{\RequirePackage{ajmacros}}{\PackageError{utf}{No File ajmacros.sty!}{}}
+	%for literature
+	\DeclareRobustCommand\ajKunoji{\iftdir\mbox{\UTF{3033}\UTF{3035}}\else
+		\PackageError{utf}{A TATE character in YOKO mode!}{Change a direction to TATE.}
+		\fi}
+	\DeclareRobustCommand\ajKunojiwithBou{\iftdir\mbox{\bou{\mbox{\UTF{3033}}}\bou{\mbox{\UTF{3035}}}}\else
+		\PackageError{utf}{A TATE character in YOKO mode!}{Change a direction to TATE.}
+		\fi}
+	\DeclareRobustCommand\ajDKunoji{\iftdir\mbox{\UTF{3034}\UTF{3035}}\else
+		\PackageError{utf}{A TATE character in YOKO mode!}{Change a direction to TATE.}
+		\fi}
+	\DeclareRobustCommand\ajDKunojiwithBou{\iftdir\mbox{\bou{\mbox{\UTF{3034}}}\bou{\mbox{\UTF{3035}}}}\else
+		\PackageError{utf}{A TATE character in YOKO mode!}{Change a direction to TATE.}
+		\fi}
+	\newcommand\ajNinoji{\CID{12106}}
+	\newcommand\ajvarNinoji{\iftdir\CID{12107}\else
+		\PackageError{utf}{A TATE character in YOKO mode!}{Change a direction to TATE.}
+		\fi}
+	\newcommand\ajYusuriten{\iftdir\CID{16193}\else
+		\PackageError{utf}{A TATE character in YOKO mode!}{Change a direction to TATE.}
+		\fi}
+	\newcommand\ajMasu{\UTF{303c}}
+	\newcommand\ajYori{\UTF{309f}}
+	\newcommand\ajKoto{\UTF{30ff}}
+	\newcommand\ajUta{\UTF{303d}}
+	%dingbats
+	\newcommand\ajCommandKey{\UTF{2318}}
+	\newcommand\ajReturnKey{\UTF{23ce}}
+	\newcommand\ajCheckmark{\UTF{2713}}
+	\newcommand\ajVisibleSpace{\UTF{2423}}
+	\newcommand\ajSenteMark{\UTF{2617}}
+	\newcommand\ajGoteMark{\UTF{2616}}
+	\newcommand\ajClub{\UTF{2663}}
+	\newcommand\ajHeart{\UTF{2661}}
+	\newcommand\ajSpade{\UTF{2660}}
+	\newcommand\ajDiamond{\UTF{2662}}
+	\newcommand\ajvarClub{\UTF{2667}}
+	\newcommand\ajvarHeart{\UTF{2665}}
+	\newcommand\ajvarSpade{\UTF{2664}}
+	\newcommand\ajvarDiamond{\UTF{2666}}
+	\newcommand\ajPhone{\UTF{260e}}
+	\newcommand\ajPostal{\UTF{3020}}
+	\newcommand\ajvarPostal{\UTF{3036}}
+	\newcommand\ajSun{\UTF{2600}}
+	\newcommand\ajCloud{\UTF{2601}}
+	\newcommand\ajUmbrella{\UTF{2602}}
+	\newcommand\ajSnowman{\UTF{2603}}
+	\newcommand\ajJIS{\UTF{3004}}
+	\newcommand\ajJAS{\CID{12088}}
+	\newcommand\ajBall{\CID{12097}}
+	\newcommand\ajHotSpring{\UTF{2668}}
+	\newcommand\ajWhiteSesame{\UTF{fe46}}
+	\newcommand\ajBlackSesame{\UTF{fe45}}
+	\newcommand\ajWhiteFlorette{\UTF{2740}}
+	\newcommand\ajBlackFlorette{\UTF{273f}}
+	\newcommand\ajRightBArrow{\CID{8206}}
+	\newcommand\ajLeftBArrow{\CID{8207}}
+	\newcommand\ajUpBArrow{\CID{8208}}
+	\newcommand\ajDownBArrow{\CID{8209}}
+	\newcommand\ajRightHand{\CID{8219}}
+	\newcommand\ajLeftHand{\CID{8220}}
+	\newcommand\ajUpHand{\CID{8221}}
+	\newcommand\ajDownHand{\CID{8222}}
+	\newcommand\ajRightScissors{\CID{12176}}
+	\newcommand\ajLeftScissors{\CID{12175}}
+	\newcommand\ajUpScissors{\CID{12177}}
+	\newcommand\ajDownScissors{\CID{12178}}
+	\newcommand\ajRightWArrow{\CID{12197}}
+	\newcommand\ajLeftWArrow{\CID{12196}}
+	\newcommand\ajUpWArrow{\CID{12198}}
+	\newcommand\ajDownWArrow{\CID{12199}}
+	\newcommand\ajRightDownArrow{\CID{12202}}
+	\newcommand\ajLeftDownArrow{\CID{12203}}
+	\newcommand\ajLeftUpArrow{\CID{12204}}
+	\newcommand\ajRightUpArrow{\CID{12205}}
+\fi
+\endinput

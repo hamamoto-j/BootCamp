@@ -1,0 +1,78 @@
+\documentclass[12pt]{jsarticle}
+\usepackage[dvipdfmx]{graphicx}
+\textheight = 25truecm
+\textwidth = 18truecm
+\topmargin = -1.5truecm
+\oddsidemargin = -1truecm
+\evensidemargin = -1truecm
+\marginparwidth = -1truecm
+
+\def\theenumii{\Alph{enumii}}
+\def\theenumiii{\alph{enumiii}}
+\def\labelenumi{(\theenumi)}
+\def\labelenumiii{(\theenumiii)}
+\def\theenumiv{\roman{enumiv}}
+\def\labelenumiv{(\theenumiv)}
+\usepackage{comment}
+\usepackage{url}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% sty/ にある研究室独自のスタイルファイル
+\usepackage{jtygm}  % フォントに関する余計な警告を消す
+\usepackage{nutils} % insertfigure, figref, tabref マクロ
+
+\def\figdir{./figs} % 図のディレクトリ
+\def\figext{pdf}    % 図のファイルの拡張子
+
+\begin{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% 表題
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{center}
+{\LARGE SlackBotプログラムの報告書}
+\end{center}
+
+\begin{flushright}
+  2019/4/26\\
+  浜本 時空
+\end{flushright}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% 概要
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{概要}
+\label{sec:introduction}
+本資料は2019年度新人研修課題にて作成したSlackBotプログラムの報告書である．本資料では，課題内容，理解できなかった部分，作成できなかった機能，および自主的に作成した機能について述べる．
+なお，本資料において発言とはチャットツールであるSlack\cite{slack}の特定のチャンネル上で発言すること，または発言そのものを指す．また，本資料において発言内容は``''で囲って表す．
+
+\section{課題の内容}
+\begin{enumerate}
+  \item 任意の文字列を発言するプログラムの作成\\
+  受信した発言の中に``「任意の文字列」と言って''という文字列を含む場合は，``任意の文字列''と発言するプログラムを作成する
+  \item SlackBotプログラムへの機能追加\\
+  SlackBotプログラムへ機能を追加する． Slack以外のWebサービスのAPIやWebhookを利用した機能を追加する．
+\end{enumerate}
+
+\section{理解できなかった部分}
+理解できなかった部分を以下に示す．
+\begin{enumerate}
+  \item 今回の課題ではサンプルプログラムが配布されており，サンプルプログラム内に\verb|naive_respond|メソッドが存在する．このメソッドを使用するとSlackにメッセージが表示されるが，メソッド内のにincoming\_webhookのURL記述がないにもかかわらず，なぜSlack上にメッセージが表示されるのかが理解できなかった
+\end{enumerate}
+
+\section{作成できなかった機能}
+作成できなかった機能を以下に示す．
+\begin{enumerate}
+  \item 設定したOutgoing Webhook以外からのPOSTの拒否
+  \item 表示させる商品の値段の閾値を決める機能
+\end{enumerate}
+
+\section{自主的に作成した機能}
+自主的に作成した機能を以下に示す．
+\begin{enumerate}
+  \item 機能としてサポートされていない発言を受信した場合は，機能の概要を表示する．詳しくはSlackBotプログラムの仕様書に記載する．
+\end{enumerate}
+
+\bibliographystyle{ipsjunsrt}
+\bibliography{mybibdata}
+
+\end{document}

@@ -1,0 +1,328 @@
+\documentclass[12pt]{jsarticle}
+\usepackage[dvipdfmx]{graphicx}
+\textheight = 25truecm
+\textwidth = 18truecm
+\topmargin = -1.5truecm
+\oddsidemargin = -1truecm
+\evensidemargin = -1truecm
+\marginparwidth = -1truecm
+
+\def\theenumii{\Alph{enumii}}
+\def\theenumiii{\alph{enumiii}}
+\def\labelenumi{(\theenumi)}
+\def\labelenumiii{(\theenumiii)}
+\def\theenumiv{\roman{enumiv}}
+\def\labelenumiv{(\theenumiv)}
+\usepackage{comment}
+\usepackage{url}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% sty/ にある研究室独自のスタイルファイル
+\usepackage{jtygm}  % フォントに関する余計な警告を消す
+\usepackage{nutils} % insertfigure, figref, tabref マクロ
+
+\def\figdir{./figs} % 図のディレクトリ
+\def\figext{pdf}    % 図のファイルの拡張子
+
+\begin{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% 表題
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{center}
+{\LARGE SlackBotプログラムの仕様書}
+\end{center}
+
+\begin{flushright}
+  2019/4/26\\
+  浜本 時空
+\end{flushright}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% 概要
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{はじめに}
+\label{sec:introduction}
+本資料は2019年度新人研修課題にて作成したSlackBotプログラムの仕様についてまとめたものである．
+本プログラムで使用するSlack\cite{slack}とはWeb上で利用できるチームコミュニケーションツールである．
+本プログラムは以下の2つの機能をもつ．
+\begin{enumerate}
+  \item 指定した文字列を発言する機能
+  \item 指定された条件に合致するゲームに関する商品の検索
+\end{enumerate}
+なお，本資料において発言とはSlackにおいて文字列を投稿することを指す．また，本資料において発言内容は``''で囲って表す．
+
+\section{対象とする利用者}
+本プログラムは以下のアカウントを所有する利用者を対象としている．
+\begin{enumerate}
+  \item Slackアカウント
+  \item 楽天\cite{rakuten}アカウント
+\end{enumerate}
+楽天アカウントは本プログラムで使用する楽天ブックスゲーム検索APIを使用するために必要である．
+
+\section{機能}
+本プログラムはSlackで``@hamabot''から始まるユーザの発言を受信し，それに対して発言する．発言内容は``@hamabot''に続く文字列により決定される．以下に本プログラムがもつ2つの機能を示す．
+\begin{description}
+  \item[(機能1)] 指定した文字列を発言する機能\\
+  この機能はユーザの``@hamabot (任意の文字列)と言って''という発言に対して，(任意の文字列)を発言する．
+  例えば，``@hamabot おはようと言って''に対しては``おはよう''と発言する．
+  ``@hamabot おはようと言ってと言って''のようにユーザの発言の中に``と言って''が複数回続く場合は，発言中で一番初めにある``と言って''より前の文字列を発言内容とする．この場合は``おはよう''と発言する．
+  \item[(機能2)] 指定された条件に合致するゲームに関する商品の検索\\
+  この機能はユーザの``@hamabot (タイトル),(対応機種),(ソート順) で検索''という発言に対して，``で検索''より前の文字列のうちコンマで区切られた(タイトル)，(対応機種)，(ソート順)で楽天ブックス内のゲームに関する商品を検索，ソートし，購入が可能な商品のうち上位3件の商品情報を表示する．表示する商品情報を\tabref{tab:商品情報}に示す．
+  たとえば，``@hamabot オセロ,PS1,人気 で検索''に対しては，「オセロ」が含まれるタイトルで対応機種が「PS1」のゲームを「人気」というソート順でソートし，上位3件の商品を表示する．
+
+楽天ブックスにおいて，商品のソート順には以下の７つの種類がある．
+\begin{enumerate}
+  \item 標準
+  \item 売れている
+  \item 発売日(古い)
+  \item 発売日(新しい)
+  \item 価格が安い
+  \item 価格が高い
+  \item レビューの件数が多い
+  \item レビューの評価(平均)が高い
+\end{enumerate}
+本プログラムでは(2)$\sim$(6)の5つのソート順を選ぶことができ，それぞれ人気，古い，新しい，安い，および高い，と入力することでソート順を指定できる．これらの文字列が入力された場合は，楽天ブックスでの「標準」というソート順でソートされる．
+
+
+  \begin{table}[tb]
+    \begin{center}
+      \caption{表示する商品情報}\label{tab:商品情報}
+      \begin{tabular}{l|l}
+        \hline\hline
+        商品情報名 & 内容\\
+        \hline
+        タイトル & タイトルの名称(2文字以上)\\
+        対応機種 & 対応機種の名称\\
+        発売日 & 発売された年月日\\
+        価格 & 単位は円\\
+        評価平均 & 最大５点満点\\
+        評価件数 & 評価の件数\\
+        楽天ブックスURL & 楽天ブックスの商品ページのURL\\
+        \hline
+      \end{tabular}
+    \end{center}
+  \end{table}
+
+\end{description}
+
+上記の(機能1)と(機能2)のどちらにも当てはまるユーザの発言を受信したときは，(機能1)が優先される．一方，(機能1)と(機能2)のどちらにも当てはまらないユーザの発言を受信したときは，以下のメッセージを発言する．
+\newpage
+{
+\fontsize{7pt}{8pt}\selectfont
+\begin{verbatim}
+  こんにちは！私はhamabotです．私には2つの機能が備わっています．
+
+  機能(1)
+
+  「○○と言って」と入力すると「○○」と発言します．
+
+  機能(2)
+
+  楽天ブックスで販売しているゲームに関する商品を検索し，上位3件を表示します．
+
+  ＜検索フォーマット => @hamabot [タイトル],[機種],[ソート]で検索＞
+
+  　｜[タイトル]...2文字以上で入力してください．
+
+  　｜[機種]...Swich，DS，PS3など，機種名をアルファベットと数字で入力してください．
+
+  　｜[ソート]...人気，古い，新しい，安い，高い　のうちから一つ選ぶことができます．（それ以外の場合は標準のソートを行います．）
+
+  なお，販売していない商品は検索の対象外となっております．
+\end{verbatim}
+}
+
+\section{動作環境}\label{動作環境}
+本プログラムはHeroku\cite{heroku}上で動作させることを想定している．Herokuとは，PaaS（Platform as a Service）と呼ばれる形態のサービスで，アプリケーションを実行するためのプラットフォームである．
+
+\section{動作確認済み環境}\label{動作確認済み環境}
+本プログラムは表\ref{tab:動作環境}の環境で動作確認済みである．
+\begin{table}[tb]
+  \begin{center}
+    \caption{動作環境}\label{tab:動作環境}
+    \begin{tabular}{l|l}
+      \hline\hline
+      項目 & 内容\\
+      \hline
+      OS & Ubuntu 18.04.2 LTS(Bionic Beaver)\\
+      メモリ & 512MB\\
+      CPU & Intel(R) Xeon(R) CPU E5-2670 v2 @ 2.50GHz\\
+      Ruby & 2.5.3p105\\
+      Gem & bundler 1.16.1\\
+       & mustermann 1.0.2\\
+       & rack 2.0.4\\
+       & rack-protection 2.0.1\\
+       & sinatra 2.0.1\\
+       & tilt 2.0.8\\
+      \hline
+    \end{tabular}
+  \end{center}
+\end{table}
+
+\section{環境構築}
+\subsection{概要}
+本プログラムの動作のために必要な環境構築の項目を以下に示す．
+\begin{enumerate}
+  \item SlackのIncoming Webhookの設定
+  \item Herokuアカウントの作成と設定
+  \item SlackのOutgoing Webhookの設定
+  \item 楽天ブックスゲーム検索APIのアプリIDの取得
+\end{enumerate}
+
+
+\subsection{SlackのIncoming Webhookの設定}\label{subsec:SlackのIncoming Webhookの設定}
+Slackが提供しているIncoming Webhookの設定をおこなう．
+\begin{enumerate}
+  \item Slackにログインし，画面左上にある自分の名前をクリックし，「Slackのカスタマイズ」を選択する．
+  \item 画面左側の「アカウント」欄にある「App管理」を選択する．
+  \item 画面左側の「管理」欄にある「カスタムインテグレーション」を選択する．
+  \item 「認証済みカスタムインテグレーション」から「Incoming Webhook」を選択する．
+  \item 「設定を追加」をクリックし，送信するチャンネルを選択し追加する．
+  \item Webhook URLからURLをコピーして設定を保存する．ここでコピーしたURLは
+  \ref{subsec:Herokuアカウントの作成と設定}節の手順(7)で使用する．
+\end{enumerate}
+
+\subsection{Herokuアカウントの作成と設定}\label{subsec:Herokuアカウントの作成と設定}
+\begin{enumerate}
+  \item 以下のURLからHerokuにアクセスし，「Sign up」から新しいアカウントを登録する．
+{
+\fontsize{9pt}{10pt}\selectfont
+\begin{verbatim}
+https://www.heroku.com/
+\end{verbatim}
+}
+  \item 登録したアカウントでログインし，「Getting Started on Heroku」の使用する言語としてRubyを選択する．
+  \item 「I’m ready to start」をクリックし，「Download Heroku CLI for...」からCLIをダウンロードする．
+  \item 以下のコマンドを実行し，Herokuにログインする．
+{
+\fontsize{9pt}{10pt}\selectfont
+\begin{verbatim}
+$ heroku login
+\end{verbatim}
+}
+  \item 作成したプログラムが存在するディレクトリに移動する．以下に，アプリケーションを\verb|~/myapp|以下で作成した場合のコマンド例を示す．
+{
+\fontsize{9pt}{10pt}\selectfont
+\begin{verbatim}
+$ cd ~/myapp
+\end{verbatim}
+}
+  \item 以下のコマンドを実行し，Heroku上にアプリケーションを生成する．
+{
+\fontsize{9pt}{10pt}\selectfont
+\begin{verbatim}
+$ heroku create <myapp_name>
+\end{verbatim}
+}
+上記のコマンドのうち，\verb|<myapp_name>|は任意のアプリケーション名を設定する．
+ここで設定したアプリケーション名は，\ref{subsec:SlackのOutgoing Webhookの設定}節の手順(9)にて必要になるため，控えておく．
+  \item 以下のコマンドを実行し，Herokuの環境変数にIncoming WebhookのURLを追加する．
+{
+\fontsize{9pt}{10pt}\selectfont
+\begin{verbatim}
+$heroku config:set INCOMING_WEBHOOK_URL="<incoming_webhook_url>"
+\end{verbatim}
+}
+上記のコマンドのうち，\verb|<incoming_webhook_url>|は\ref{subsec:SlackのIncoming Webhookの設定}節の手順(6)にて入手するURLである．
+\item settings.ymlにIncoming WebhookのURLを記入する．記入例を以下に示す．
+{
+\fontsize{9pt}{10pt}\selectfont
+\begin{verbatim}
+incoming_webhook_url: <incoming_webhook_url>
+\end{verbatim}
+}
+\end{enumerate}
+
+\subsection{SlackのOutgoing Webhookの設定}\label{subsec:SlackのOutgoing Webhookの設定}
+Slackが提供しているOutgoing Webhookの設定をおこなう．
+\begin{enumerate}
+\item Slackにログインし，画面左上にある自分の名前をクリックし，「Slackのカスタマイズ」を選択する．
+\item 画面左側の「アカウント」欄にある「App管理」を選択する．
+\item 画面左側の「管理」欄にある「カスタムインテグレーション」を選択する．
+\item 「認証済みカスタムインテグレーション」から「Outgoing Webhook」を選択する．
+\item 「設定を追加」をクリックし「Outgoing Webhookインテグレーション」の追加をクリックする．
+\item 以下の3つの項目を設定する．
+  \item 「チャンネル」にて，発言を監視するチャンネルを選択する．
+  \item 「引き金となる言葉」に，Webhookが動作する契機となる単語を設定する．
+  \item 「URL」に，Webhookが動作した際にPOSTを行うURLを設定する．
+  今回はHeroku上で動作させるため，以下のURLを設定する．
+
+{
+\fontsize{9pt}{10pt}\selectfont
+\begin{verbatim}
+https://<myapp_name>.herokuapp.com/slack
+\end{verbatim}
+}
+  上記のURLのうち，\verb|<myapp_name>|は\ref{subsec:Herokuアカウントの作成と設定}節の手順(6)で設定した
+  アプリケーション名である．
+\end{enumerate}
+
+\subsection{楽天ブックスゲーム検索APIのアプリIDの取得}
+今回使用したAPIは楽天ブックスゲーム検索APIである．
+本APIを使用するための，アプリIDの取得方法について以下に示す．
+\begin{enumerate}
+  \item 以下のURLにアクセスし，「アプリID発行」をクリックする．
+{
+\fontsize{9pt}{10pt}\selectfont
+\begin{verbatim}
+https://webservice.rakuten.co.jp/
+\end{verbatim}
+}
+  \item ログインし，アプリ新規作成フォームのアプリ名とアプリURL欄を記入し，新規アプリを作成する．
+
+  \item 「アプリID/デベロッパーID」欄のアプリIDをコピーし，以下のコマンドを実行してHerokuの環境変数にアプリIDを追加する．
+
+{
+\fontsize{9pt}{10pt}\selectfont
+\begin{verbatim}
+$heroku config:set INCOMING_WEBHOOK_URL="<アプリID>"
+\end{verbatim}
+}
+上記のうち，\verb|<アプリID>|がコピーしたアプリIDである．
+
+\item settings.ymlにアプリIDを記入する．記入例を以下に示す．
+
+{
+\fontsize{9pt}{10pt}\selectfont
+\begin{verbatim}
+applicationId: <アプリID>
+\end{verbatim}
+}
+\end{enumerate}
+
+\section{使用方法}
+本プログラムはHeroku上で動作するため，Herokuへデプロイすることで実行できる．Herokuには以下のコマンドを実行してデプロイできる．
+
+{
+\fontsize{9pt}{10pt}\selectfont
+\begin{verbatim}
+$ git push heroku master
+\end{verbatim}
+}
+\section{エラー処理}
+\begin{enumerate}
+  \item(機能2)について，検索したが購入できる商品が存在しなかった場合には以下のメッセージを発言する．
+
+{
+\fontsize{9pt}{10pt}\selectfont
+\begin{verbatim}
+購入できる商品はありませんでした．
+\end{verbatim}
+}
+\end{enumerate}
+\section{保障しない動作}
+本プログラムの保証しない動作を以下に示す．
+\begin{enumerate}
+  \item 楽天ブックスゲーム検索APIのサービス停止時における本プログラムの実行
+  \item \ref{動作環境}章に示した動作環境以外の環境での本プログラムの実行
+  \item SlackのOutgoing Webhook以外からのPOSTリクエストをブロックする動作
+\end{enumerate}
+
+
+\section{おわりに}
+本資料では2019年度新人研修課題にて作成したSlackBotプログラムの仕様についてまとめた．
+
+\bibliographystyle{ipsjunsrt}
+\bibliography{mybibdata}
+
+\end{document}
