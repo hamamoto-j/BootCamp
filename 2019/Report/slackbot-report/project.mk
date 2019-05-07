@@ -5,7 +5,7 @@
 # If the main TeX file is ``myproject.tex'', set:
 #   PROJECT = myproject
 #
-PROJECT = SlackBot_repo
+PROJECT = slackbot_report
 
 # If you have your own bib file ``mybibfile.bib'', set:
 #   PROJECT_BIB = mybibfile.bib

@@ -1,9 +1,9 @@
-This is e-pTeX, Version 3.14159265-p3.5-130605-2.6 (utf8.euc) (TeX Live 2015/dev/Debian) (preloaded format=platex 2019.4.1)  26 APR 2019 17:01
+This is e-pTeX, Version 3.14159265-p3.5-130605-2.6 (utf8.euc) (TeX Live 2015/dev/Debian) (preloaded format=platex 2019.4.1)  7 MAY 2019 13:06
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
-**SlackBot_2019.tex
-(./SlackBot_2019.tex
+**slackbot_specification.tex
+(./slackbot_specification.tex
 pLaTeX2e <2006/11/10> (based on LaTeX2e <2014/05/01> patch level 0)
 Babel <3.9l> and hyphenation patterns for 11 languages loaded.
 (/usr/share/texlive/texmf-dist/tex/platex/jsclasses/jsarticle.cls
@@ -78,8 +78,8 @@ Package: jtygm 1998/06/12 based on v1.3 KANJI font defines
 )
 (sty/nutils.sty
 Package: nutils 2014/11/22 v1.0 by Yoshinari Nomura
-) (./SlackBot_2019.aux)
-\openout1 = `SlackBot_2019.aux'.
+) (./slackbot_specification.aux)
+\openout1 = `slackbot_specification.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 28.
 LaTeX Font Info:    ... okay on input line 28.
@@ -148,14 +148,15 @@ LaTeX Font Info:    Font shape `JT1/gt/m/n' will be
 (Font)              scaled to size 8.64899pt on input line 190.
 LaTeX Font Info:    Font shape `JY1/gt/m/n' will be
 (Font)              scaled to size 8.64899pt on input line 190.
- [4] [5] (./SlackBot_2019.bbl [6]) [7] (./SlackBot_2019.aux) ) 
+ [4] [5]
+(./slackbot_specification.bbl [6]) [7] (./slackbot_specification.aux) ) 
 Here is how much of TeX's memory you used:
  915 strings out of 494934
- 10823 string characters out of 6180150
+ 10922 string characters out of 6180150
  67738 words of memory out of 5000000
  4303 multiletter control sequences out of 15000+600000
  13731 words of font info for 66 fonts, out of 8000000 for 9000
  269 hyphenation exceptions out of 8191
- 25i,8n,21p,360b,386s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 25i,8n,21p,369b,386s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on SlackBot_2019.dvi (7 pages, 18424 bytes).
+Output written on slackbot_specification.dvi (7 pages, 18424 bytes).
